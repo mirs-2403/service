@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ROS2 Service Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
+</head>
+<body>
+    <h1>ROS2 Service Example</h1>
+    <button onclick="callService(true)">Send TRUE</button>
+    <button onclick="callService(false)">Send FALSE</button>
+    <p id="result"></p>
+
+    <script>
+        // ROS Bridge WebSocketに接続
+        const ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090' // ローカルホストでrosbridge_serverに接続
+        });
+
+        // サービス定義
+        const exampleService = new ROSLIB.Service({
+            ros: ros,
+            name: '/example_service',
+            serviceType: 'std_srvs/SetBool'
+        });
+
+        // サービス呼び出し
+        function callService(value) {
+            const request = new ROSLIB.ServiceRequest({
+                data: value
+            });
+
+            exampleService.callService(request, (result) => {
+                document.getElementById('result').innerText = `Response: ${result.message}`;
+                console.log('Service Response:', result);
+            });
+        }
+    </script>
+</body>
+</html>
